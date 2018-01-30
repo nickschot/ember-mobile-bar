@@ -1,0 +1,1 @@
+export { default } from 'ember-mobile-bar/components/mobile-bar';
