@@ -55,13 +55,13 @@ export default Component.extend(RespondsToScroll, {
       //TODO: if scroll event and dy is 0 set dy to 1 / window.devicePixelRatio
 
       if(dy === 0 && get(this, 'touchMoveFired')){
-        console.log(
+        /*console.log(
           get(this, 'touchStartScrollTop'),
           scrollTop,
           ((get(this, 'lastTouchMove').clientY - get(this, 'firstTouchMove').clientY) + get(this, 'touchStartScrollTop')) - get(this, 'lastScrollTop'),
           //get(this, 'firstTouchMove').clientY,
           //get(this, 'lastTouchMove').clientY
-        );
+        );*/
         //dy = 1 / window.devicePixelRatio;
         //scrollTop += dy;
       }// else {
@@ -160,7 +160,7 @@ export default Component.extend(RespondsToScroll, {
         }*/
       } else {
         //this fixes iOS, but breaks chrome/android
-        this.toState(STATE_MOVING);
+        this.toState(STATE_MOVING_STANDBY);
       }
     }
   },

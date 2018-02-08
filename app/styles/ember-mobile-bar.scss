@@ -1,0 +1,52 @@
+$mobile-bar-height: 50px;
+
+.mobile-bar-wrapper {
+  padding: $mobile-bar-height 0;
+}
+
+.mobile-bar {
+  height: $mobile-bar-height;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  touch-action: pan-x;
+
+  &.mobile-bar--top {
+    background: darkcyan;
+    top: 0;
+  }
+
+  &.mobile-bar--bottom {
+    background: orange;
+    bottom: 0;
+  }
+
+  &.mobile-bar__transitioning {
+    transition: transform 0.15s;
+  }
+}
+
+//TODO: demo
+.search-menu {
+  padding: 7px;
+  height: 85px;
+
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+
+  input {
+    border-radius: 2px;
+    border: none;
+    margin: 0;
+  }
+
+  .nav-item a {
+    color: #FFF;
+    padding-top: 0.7rem;
+    padding-bottom: calc(0.7rem - 1px);
+    font-size: 0.8em;
+
+    &.active {
+      border-bottom: 2px solid #FFF;
+    }
+  }
+}
