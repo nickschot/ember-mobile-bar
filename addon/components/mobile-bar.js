@@ -64,25 +64,36 @@ export default Component.extend(RespondsToScroll, {
       get(this, 'wrapperElement').addEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
     }
   },
+  willDestroyElement(){
+    get(this, 'wrapperElement').removeEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
+    get(this, 'wrapperElement').removeEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
+  },
 
+  // events --------------------------------------------------------------------
   //TODO: calculate velocity between touchstart/touchend to decide whether or not we need to close
   onTouchStart(){
     set(this, 'isDragging', true);
     this.toState(STATE_MOVING);
+  },
+  scroll(){
+    const currentState = get(this, 'currentState');
+    if(!get(this, 'isLocked') && get(this, 'isMoving')){
+      const scrollTop = this._getScrollTop();
+      const dy = scrollTop - get(this, 'lastScrollTop');
+
+      set(this, 'lastScrollTop', scrollTop);
+      this.setPosition(dy, currentState);
+    }
   },
   onTouchEnd(){
     set(this, 'isDragging', false);
     next(() => this.transitionToFinalState());
   },
 
-  willDestroyElement(){
-    get(this, 'wrapperElement').removeEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
-    get(this, 'wrapperElement').removeEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
-  },
-
+  // functions -----------------------------------------------------------------
   toState(state){
     if(state === STATE_MOVING){
-      set(this, 'lastScrollTop', this.getScrollTop());
+      set(this, 'lastScrollTop', this._getScrollTop());
     } else if(state === STATE_OPEN || state === STATE_MOVING_OPEN) {
       set(this, 'currentPosition', 0);
       get(this, 'element').style.transform = `translateY(0)`;
@@ -98,20 +109,7 @@ export default Component.extend(RespondsToScroll, {
       ? STATE_CLOSED
       : STATE_OPEN;
 
-    //TODO: transition
-
     this.toState(finalState);
-  },
-
-  scroll(){
-    const currentState = get(this, 'currentState');
-    if(!get(this, 'isLocked') && get(this, 'isMoving')){
-      const scrollTop = this.getScrollTop();
-      let dy = scrollTop - get(this, 'lastScrollTop');
-      set(this, 'lastScrollTop', scrollTop);
-
-      this.setPosition(dy, currentState);
-    }
   },
 
   setPosition(dy, currentState){
@@ -140,7 +138,8 @@ export default Component.extend(RespondsToScroll, {
     }
   },
 
-  getScrollTop(){
+  // util
+  _getScrollTop(){
     return window.scrollY || document.scrollingElement.scrollTop || document.documentElement.scrollTop;
   }
 });
