@@ -3,6 +3,7 @@ import layout from '../templates/components/mobile-bar';
 
 import { computed, get, set } from '@ember/object';
 import RespondsToScroll from 'ember-responds-to/mixins/responds-to-scroll';
+import { next } from '@ember/runloop';
 
 const STATE_CLOSED         = 1;
 const STATE_MOVING_CLOSED  = 2;
@@ -16,7 +17,7 @@ export default Component.extend(RespondsToScroll, {
   classNames: ['mobile-bar'],
   classNameBindings: [
     'isBottomBar:mobile-bar--bottom:mobile-bar--top',
-    'isMoving:mobile-bar--dragging',
+    'isDragging:mobile-bar--dragging',
     'isOpen:mobile-bar--open',
     'isClosed:mobile-bar--closed'
   ],
@@ -29,6 +30,7 @@ export default Component.extend(RespondsToScroll, {
   wrapperElement: null,
 
   // private
+  isDragging: false,
   currentState: STATE_OPEN,
   currentPosition: 0,
   lastScrollTop: 0,
@@ -58,18 +60,19 @@ export default Component.extend(RespondsToScroll, {
     this._super(...arguments);
 
     if(!get(this, 'isLocked')){
-      //TODO: calculate velocity between touchstart/touchend to decide whether or not we need to close
       get(this, 'wrapperElement').addEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
       get(this, 'wrapperElement').addEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
     }
   },
 
+  //TODO: calculate velocity between touchstart/touchend to decide whether or not we need to close
   onTouchStart(){
-    set(this, 'lastScrollTop', this.getScrollTop());
+    set(this, 'isDragging', true);
     this.toState(STATE_MOVING);
   },
   onTouchEnd(){
-    this.transitionToFinalState();
+    set(this, 'isDragging', false);
+    next(() => this.transitionToFinalState());
   },
 
   willDestroyElement(){
@@ -78,7 +81,9 @@ export default Component.extend(RespondsToScroll, {
   },
 
   toState(state){
-    if(state === STATE_OPEN || state === STATE_MOVING_OPEN) {
+    if(state === STATE_MOVING){
+      set(this, 'lastScrollTop', this.getScrollTop());
+    } else if(state === STATE_OPEN || state === STATE_MOVING_OPEN) {
       set(this, 'currentPosition', 0);
       get(this, 'element').style.transform = `translateY(0)`;
     } else if(state === STATE_CLOSED || state === STATE_MOVING_CLOSED){
