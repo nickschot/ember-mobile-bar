@@ -64,17 +64,22 @@ export default Component.extend(RespondsToScroll, {
     set(this, 'lastScrollTop', this._getScrollTop());
   },
   scroll(){
-    if(!get(this, 'isLocked') && get(this, 'isDragging')){
+    if(!get(this, 'isLocked')){
       const scrollTop = this._getScrollTop();
-      const dy = scrollTop - get(this, 'lastScrollTop');
 
-      set(this, 'lastScrollTop', scrollTop);
+      if(get(this, 'isDragging')){
+        const dy = scrollTop - get(this, 'lastScrollTop');
 
-      const currentPosition = get(this, 'currentPosition');
-      const newPosition = Math.min(Math.max(currentPosition + dy, 0), get(this, 'height'));
+        set(this, 'lastScrollTop', scrollTop);
 
-      if(currentPosition !== newPosition){
-        set(this, 'currentPosition', newPosition);
+        const currentPosition = get(this, 'currentPosition');
+        const newPosition = Math.min(Math.max(currentPosition + dy, 0), get(this, 'height'));
+
+        if(currentPosition !== newPosition){
+          set(this, 'currentPosition', newPosition);
+        }
+      } else if(scrollTop < get(this, 'height') / 2){
+        set(this, 'currentPosition', 0);
       }
     }
   },
