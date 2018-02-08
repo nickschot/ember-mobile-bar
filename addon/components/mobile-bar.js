@@ -2,14 +2,9 @@ import Component from '@ember/component';
 import layout from '../templates/components/mobile-bar';
 
 import { computed, get, set } from '@ember/object';
+import { scheduleOnce } from '@ember/runloop';
+import { htmlSafe } from '@ember/string';
 import RespondsToScroll from 'ember-responds-to/mixins/responds-to-scroll';
-import { next } from '@ember/runloop';
-
-const STATE_CLOSED         = 1;
-const STATE_MOVING_CLOSED  = 2;
-const STATE_MOVING         = 3;
-const STATE_MOVING_OPEN    = 4;
-const STATE_OPEN           = 5;
 
 export default Component.extend(RespondsToScroll, {
   layout,
@@ -21,6 +16,7 @@ export default Component.extend(RespondsToScroll, {
     'isOpen:mobile-bar--open',
     'isClosed:mobile-bar--closed'
   ],
+  attributeBindings: ['style'],
 
   // public
   isLocked: true,
@@ -31,7 +27,6 @@ export default Component.extend(RespondsToScroll, {
 
   // private
   isDragging: false,
-  currentState: STATE_OPEN,
   currentPosition: 0,
   lastScrollTop: 0,
 
@@ -39,21 +34,15 @@ export default Component.extend(RespondsToScroll, {
     return get(this, 'type') === 'bottom';
   }),
 
-  isOpen: computed('currentState', function(){
-    const currentState = get(this, 'currentState');
-    return currentState === STATE_OPEN
-      || currentState === STATE_MOVING_OPEN;
+  isOpen: computed('currentPosition', 'height', function(){
+    return get(this, 'currentPosition') === get(this, 'height');
   }),
-  isMoving: computed('currentState', function(){
-    const currentState = get(this, 'currentState');
-    return currentState === STATE_MOVING
-      || currentState === STATE_MOVING_CLOSED
-      || currentState === STATE_MOVING_OPEN;
+  isClosed: computed('currentPosition', function(){
+    return get(this, 'currentPosition') === 0;
   }),
-  isClosed: computed('currentState', function(){
-    const currentState = get(this, 'currentState');
-    return currentState === STATE_CLOSED
-      || currentState === STATE_MOVING_CLOSED;
+
+  style: computed('currentPosition', function(){
+    return htmlSafe(`transform: translateY(-${get(this, 'currentPosition')}px)`);
   }),
 
   didInsertElement(){
@@ -70,71 +59,38 @@ export default Component.extend(RespondsToScroll, {
   },
 
   // events --------------------------------------------------------------------
-  //TODO: calculate velocity between touchstart/touchend to decide whether or not we need to close
   onTouchStart(){
     set(this, 'isDragging', true);
-    this.toState(STATE_MOVING);
+    set(this, 'lastScrollTop', this._getScrollTop());
   },
   scroll(){
-    const currentState = get(this, 'currentState');
-    if(!get(this, 'isLocked') && get(this, 'isMoving')){
+    if(!get(this, 'isLocked') && get(this, 'isDragging')){
       const scrollTop = this._getScrollTop();
       const dy = scrollTop - get(this, 'lastScrollTop');
 
       set(this, 'lastScrollTop', scrollTop);
-      this.setPosition(dy, currentState);
+
+      const currentPosition = get(this, 'currentPosition');
+      const newPosition = Math.min(Math.max(currentPosition + dy, 0), get(this, 'height'));
+
+      if(currentPosition !== newPosition){
+        set(this, 'currentPosition', newPosition);
+      }
     }
   },
   onTouchEnd(){
     set(this, 'isDragging', false);
-    next(() => this.transitionToFinalState());
+    scheduleOnce('afterRender', this, 'setFinalPosition');
   },
 
   // functions -----------------------------------------------------------------
-  toState(state){
-    if(state === STATE_MOVING){
-      set(this, 'lastScrollTop', this._getScrollTop());
-    } else if(state === STATE_OPEN || state === STATE_MOVING_OPEN) {
-      set(this, 'currentPosition', 0);
-      get(this, 'element').style.transform = `translateY(0)`;
-    } else if(state === STATE_CLOSED || state === STATE_MOVING_CLOSED){
+  setFinalPosition(){
+    if(get(this, 'currentPosition') > get(this, 'height') / 2){
+      // closed
       set(this, 'currentPosition', get(this, 'height'));
-      get(this, 'element').style.transform = `translateY(-${get(this, 'currentPosition')}px)`;
-    }
-
-    set(this, 'currentState', state);
-  },
-  transitionToFinalState(){
-    const finalState = get(this, 'currentPosition') > get(this, 'height') / 2
-      ? STATE_CLOSED
-      : STATE_OPEN;
-
-    this.toState(finalState);
-  },
-
-  setPosition(dy, currentState){
-    let newPosition = get(this, 'currentPosition') + dy;
-
-    if(newPosition <= 0){
-      if(currentState !== STATE_MOVING_OPEN){
-        this.toState(STATE_MOVING_OPEN);
-      }
-
-      return;
-    } else if(newPosition >= get(this, 'height')){
-      if(currentState !== STATE_MOVING_CLOSED){
-        this.toState(STATE_MOVING_CLOSED);
-      }
-
-      return;
-    } else if(get(this, 'currentState') !== STATE_MOVING) {
-      this.toState(STATE_MOVING);
-    }
-
-    set(this, 'currentPosition', newPosition);
-
-    if(get(this, 'currentState') === STATE_MOVING){
-      get(this, 'element').style.transform = `translateY(-${get(this, 'currentPosition')}px)`;
+    } else {
+      // open
+      set(this, 'currentPosition', 0);
     }
   },
 
