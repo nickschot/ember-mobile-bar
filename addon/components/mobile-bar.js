@@ -20,9 +20,26 @@ export default Component.extend(RespondsToScroll, {
   attributeBindings: ['style'],
 
   // public
-  collapsibleHeight: 50,
+  /**
+   * Height in px of the collapsible part of the bar.
+   * Will be automatically calculated if set to 0.
+   */
+  collapsibleHeight: 0,
+
+  /**
+   * If true the bar will keep a fixed position.
+   * If false it will collapse on scroll.
+   */
   isLocked: true,
+
+  /**
+   * Type of the bar. Either 'top' or 'bottom'.
+   */
   type: 'top',
+
+  /**
+   * Whether or not a shadow is applied to the bar
+   */
   withShadow: true,
 
   // protected
@@ -43,6 +60,12 @@ export default Component.extend(RespondsToScroll, {
   }),
   isClosed: computed('currentPosition', function(){
     return get(this, 'currentPosition') === 0;
+  }),
+
+  _collapsibleHeight: computed('collapsibleHeight', 'elementHeight', function(){
+    return get(this, 'collapsibleHeight')
+      ? get(this, 'collapsibleHeight')
+      : get(this, 'elementHeight');
   }),
 
   style: computed('currentPosition', function(){
@@ -94,12 +117,12 @@ export default Component.extend(RespondsToScroll, {
         set(this, 'lastScrollTop', scrollTop);
 
         const currentPosition = get(this, 'currentPosition');
-        const newPosition = Math.min(Math.max(currentPosition + dy, 0), get(this, 'collapsibleHeight'));
+        const newPosition = Math.min(Math.max(currentPosition + dy, 0), get(this, '_collapsibleHeight'));
 
         if(currentPosition !== newPosition){
           set(this, 'currentPosition', newPosition);
         }
-      } else if(scrollTop < get(this, 'collapsibleHeight') / 2){
+      } else if(scrollTop < get(this, '_collapsibleHeight') / 2){
         set(this, 'currentPosition', 0);
       }
     }
@@ -111,9 +134,9 @@ export default Component.extend(RespondsToScroll, {
 
   // functions -----------------------------------------------------------------
   setFinalPosition(){
-    if(get(this, 'currentPosition') > get(this, 'collapsibleHeight') / 2){
+    if(get(this, 'currentPosition') > get(this, '_collapsibleHeight') / 2){
       // closed
-      set(this, 'currentPosition', get(this, 'collapsibleHeight'));
+      set(this, 'currentPosition', get(this, '_collapsibleHeight'));
     } else {
       // open
       set(this, 'currentPosition', 0);
