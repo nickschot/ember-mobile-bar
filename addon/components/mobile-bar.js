@@ -68,8 +68,12 @@ export default Component.extend(RespondsToScroll, {
       : get(this, 'elementHeight');
   }),
 
-  style: computed('currentPosition', function(){
-    return htmlSafe(`transform: translateY(-${get(this, 'currentPosition')}px)`);
+  style: computed('currentPosition', 'isBottomBar', function(){
+    const position = get(this, 'isBottomBar')
+      ? get(this, 'currentPosition')
+      : -1 * get(this, 'currentPosition');
+
+    return htmlSafe(`transform: translateY(${position}px)`);
   }),
 
   // protected hooks
