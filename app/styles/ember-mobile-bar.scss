@@ -1,5 +1,4 @@
-$transition-duration: 0.15s;
-$shadow: 0 0 10px rgba(0,0,0,0.5);
+@import "ember-mobile-bar/variables";
 
 .mobile-bar {
   width: 100%;
