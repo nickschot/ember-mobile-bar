@@ -1,16 +1,15 @@
-$mobile-bar-height: 50px;
 $transition-duration: 0.15s;
-
-.mobile-bar-wrapper {
-  padding: $mobile-bar-height 0;
-}
+$shadow: 0 0 10px rgba(0,0,0,0.5);
 
 .mobile-bar {
-  height: $mobile-bar-height;
   width: 100%;
   position: fixed;
   left: 0;
   touch-action: pan-x;
+
+  &.mobile-bar--shadow {
+    box-shadow: $shadow;
+  }
 
   &.mobile-bar--top {
     background: darkcyan;
@@ -29,10 +28,7 @@ $transition-duration: 0.15s;
 
 //TODO: demo
 .search-menu {
-  padding: 7px;
-  height: 85px;
-
-  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  padding: 7px 7px 0 7px;
 
   input {
     border-radius: 2px;

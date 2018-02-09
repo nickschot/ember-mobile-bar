@@ -14,13 +14,16 @@ export default Component.extend(RespondsToScroll, {
     'isBottomBar:mobile-bar--bottom:mobile-bar--top',
     'isDragging:mobile-bar--dragging',
     'isOpen:mobile-bar--open',
-    'isClosed:mobile-bar--closed'
+    'isClosed:mobile-bar--closed',
+    'withShadow:mobile-bar--shadow'
   ],
   attributeBindings: ['style'],
 
   // public
+  collapsibleHeight: 50,
   isLocked: true,
-  height: 50,
+  type: 'top',
+  withShadow: true,
 
   // protected
   wrapperElement: null,
@@ -29,13 +32,14 @@ export default Component.extend(RespondsToScroll, {
   isDragging: false,
   currentPosition: 0,
   lastScrollTop: 0,
+  elementHeight: 0,
 
   isBottomBar: computed('type', function(){
     return get(this, 'type') === 'bottom';
   }),
 
-  isOpen: computed('currentPosition', 'height', function(){
-    return get(this, 'currentPosition') === get(this, 'height');
+  isOpen: computed('currentPosition', 'collapsibleHeight', function(){
+    return get(this, 'currentPosition') === get(this, 'collapsibleHeight');
   }),
   isClosed: computed('currentPosition', function(){
     return get(this, 'currentPosition') === 0;
@@ -45,12 +49,29 @@ export default Component.extend(RespondsToScroll, {
     return htmlSafe(`transform: translateY(-${get(this, 'currentPosition')}px)`);
   }),
 
+  // protected hooks
+  /**
+   * Fires when the height of the bar changes
+   * @param height Height of the bar in pixels
+   * @param type Either 'top' or 'bottom'
+   */
+  onHeightChange(height, type){},
+
+  // lifecycle events ----------------------------------------------------------
   didInsertElement(){
     this._super(...arguments);
 
     if(!get(this, 'isLocked')){
       get(this, 'wrapperElement').addEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
       get(this, 'wrapperElement').addEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
+    }
+  },
+  didRender(){
+    const height = get(this, 'element').offsetHeight;
+
+    if(get(this, 'elementHeight') !== height){
+      set(this, 'elementHeight', height);
+      get(this, 'onHeightChange')(height, get(this, 'type'));
     }
   },
   willDestroyElement(){
@@ -73,12 +94,12 @@ export default Component.extend(RespondsToScroll, {
         set(this, 'lastScrollTop', scrollTop);
 
         const currentPosition = get(this, 'currentPosition');
-        const newPosition = Math.min(Math.max(currentPosition + dy, 0), get(this, 'height'));
+        const newPosition = Math.min(Math.max(currentPosition + dy, 0), get(this, 'collapsibleHeight'));
 
         if(currentPosition !== newPosition){
           set(this, 'currentPosition', newPosition);
         }
-      } else if(scrollTop < get(this, 'height') / 2){
+      } else if(scrollTop < get(this, 'collapsibleHeight') / 2){
         set(this, 'currentPosition', 0);
       }
     }
@@ -90,9 +111,9 @@ export default Component.extend(RespondsToScroll, {
 
   // functions -----------------------------------------------------------------
   setFinalPosition(){
-    if(get(this, 'currentPosition') > get(this, 'height') / 2){
+    if(get(this, 'currentPosition') > get(this, 'collapsibleHeight') / 2){
       // closed
-      set(this, 'currentPosition', get(this, 'height'));
+      set(this, 'currentPosition', get(this, 'collapsibleHeight'));
     } else {
       // open
       set(this, 'currentPosition', 0);
