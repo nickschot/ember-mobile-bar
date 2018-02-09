@@ -51,21 +51,22 @@ export default Component.extend(RespondsToScroll, {
   lastScrollTop: 0,
   elementHeight: 0,
 
-  isBottomBar: computed('type', function(){
-    return get(this, 'type') === 'bottom';
-  }),
-
-  isOpen: computed('currentPosition', 'collapsibleHeight', function(){
-    return get(this, 'currentPosition') === get(this, 'collapsibleHeight');
-  }),
-  isClosed: computed('currentPosition', function(){
-    return get(this, 'currentPosition') === 0;
-  }),
-
+  // computed properties -------------------------------------------------------
   _collapsibleHeight: computed('collapsibleHeight', 'elementHeight', function(){
     return get(this, 'collapsibleHeight')
       ? get(this, 'collapsibleHeight')
       : get(this, 'elementHeight');
+  }),
+
+  isBottomBar: computed('type', function(){
+    return get(this, 'type') === 'bottom';
+  }),
+
+  isOpen: computed('currentPosition', '_collapsibleHeight', function(){
+    return get(this, 'currentPosition') === get(this, '_collapsibleHeight');
+  }),
+  isClosed: computed('currentPosition', function(){
+    return get(this, 'currentPosition') === 0;
   }),
 
   style: computed('currentPosition', 'isBottomBar', function(){
@@ -76,7 +77,7 @@ export default Component.extend(RespondsToScroll, {
     return htmlSafe(`transform: translateY(${position}px)`);
   }),
 
-  // protected hooks
+  // protected hooks -----------------------------------------------------------
   /**
    * Fires when the height of the bar changes
    * @param height Height of the bar in pixels
