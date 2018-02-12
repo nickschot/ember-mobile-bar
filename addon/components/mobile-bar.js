@@ -63,10 +63,10 @@ export default Component.extend(RespondsToScroll, {
   }),
 
   isOpen: computed('currentPosition', '_collapsibleHeight', function(){
-    return get(this, 'currentPosition') === get(this, '_collapsibleHeight');
+    return get(this, 'currentPosition') === 0;
   }),
   isClosed: computed('currentPosition', function(){
-    return get(this, 'currentPosition') === 0;
+    return get(this, 'currentPosition') === get(this, '_collapsibleHeight');
   }),
 
   style: computed('currentPosition', 'isBottomBar', function(){
