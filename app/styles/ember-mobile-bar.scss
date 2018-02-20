@@ -5,30 +5,27 @@
   position: fixed;
   left: 0;
   touch-action: pan-x;
+  background: $ember-mobile-bar-bg;
 
   &.mobile-bar--shadow {
-    box-shadow: $shadow;
+    box-shadow: $ember-mobile-bar-shadow;
   }
 
   &.mobile-bar--top {
-    background: darkcyan;
     top: 0;
   }
 
   &.mobile-bar--bottom {
-    background: orange;
     bottom: 0;
   }
 
   &:not(.mobile-bar--dragging) {
-    transition: transform $transition-duration;
+    transition: transform $ember-mobile-bar-transition-duration;
   }
 }
 
 //TODO: demo
 .search-menu {
-  padding: 7px 7px 0 7px;
-
   input {
     border-radius: 2px;
     border: none;
