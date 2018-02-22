@@ -20,11 +20,11 @@ export default Component.extend({
   }),
 
   actions: {
-    heightChanged(height, type){
+    heightChanged(height, type, isOverlay){
       if(type === 'top'){
-        set(this, 'paddingTop', height);
+        set(this, 'paddingTop', isOverlay ? 0 : height);
       } else if(type === 'bottom'){
-        set(this, 'paddingBottom', height);
+        set(this, 'paddingBottom', isOverlay ? 0 : height);
       } else {
         throw new Error(`Invalid mobile-bar type specified: ${type}`)
       }

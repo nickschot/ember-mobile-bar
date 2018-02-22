@@ -33,6 +33,12 @@ export default Component.extend(RespondsToScroll, {
   isLocked: true,
 
   /**
+   * If true the bar will be placed over the mobile-wrapper content
+   * instead of above it
+   */
+  isOverlay: false,
+
+  /**
    * Type of the bar. Either 'top' or 'bottom'.
    */
   type: 'top',
@@ -82,8 +88,9 @@ export default Component.extend(RespondsToScroll, {
    * Fires when the height of the bar changes
    * @param height Height of the bar in pixels
    * @param type Either 'top' or 'bottom'
+   * @param isOverlay Whether the bar is an overlay or not
    */
-  onHeightChange(height, type){},
+  onHeightChange(height, type, isOverlay){},
 
   // lifecycle events ----------------------------------------------------------
   didInsertElement(){
@@ -99,7 +106,7 @@ export default Component.extend(RespondsToScroll, {
 
     if(get(this, 'elementHeight') !== height){
       set(this, 'elementHeight', height);
-      get(this, 'onHeightChange')(height, get(this, 'type'));
+      get(this, 'onHeightChange')(height, get(this, 'type'), get(this, 'isOverlay'));
     }
   },
   willDestroyElement(){
@@ -109,6 +116,7 @@ export default Component.extend(RespondsToScroll, {
 
   // events --------------------------------------------------------------------
   onTouchStart(){
+    // TODO: check if target is not a mobile bar
     set(this, 'isDragging', true);
     set(this, 'lastScrollTop', this._getScrollTop());
   },
