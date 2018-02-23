@@ -6,6 +6,7 @@
   left: 0;
   touch-action: pan-x;
   background: $ember-mobile-bar-bg;
+  color: $ember-mobile-bar-color;
 
   &.mobile-bar--shadow {
     box-shadow: $ember-mobile-bar-shadow;
@@ -33,7 +34,6 @@
   }
 
   .nav-item a {
-    color: #FFF;
     padding-top: 0.7rem;
     padding-bottom: calc(0.7rem - 1px);
     font-size: 0.8em;
