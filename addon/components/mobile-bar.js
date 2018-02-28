@@ -92,6 +92,13 @@ export default Component.extend(RespondsToScroll, {
    */
   onHeightChange(height, type, isOverlay){},
 
+  /**
+   * Fires when the bar is about to be destroyed
+   * @param height 0
+   * @param type Either 'top' or 'bottom'
+   */
+  onWillDestroy(height, type){},
+
   // lifecycle events ----------------------------------------------------------
   didInsertElement(){
     this._super(...arguments);
@@ -112,6 +119,8 @@ export default Component.extend(RespondsToScroll, {
   willDestroyElement(){
     get(this, 'wrapperElement').removeEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
     get(this, 'wrapperElement').removeEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
+
+    get(this, 'onWillDestroy')(0, get(this, 'type'));
   },
 
   // events --------------------------------------------------------------------
