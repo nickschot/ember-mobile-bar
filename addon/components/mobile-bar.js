@@ -14,7 +14,8 @@ export default Component.extend(RespondsToScroll, {
     'isBottomBar:mobile-bar--bottom:mobile-bar--top',
     'isDragging:mobile-bar--dragging',
     'isOpen:mobile-bar--open',
-    'isClosed:mobile-bar--closed'
+    'isClosed:mobile-bar--closed',
+    'isLocked:mobile-bar--locked'
   ],
   attributeBindings: ['style'],
 
@@ -111,8 +112,11 @@ export default Component.extend(RespondsToScroll, {
     }
   },
   willDestroyElement(){
-    get(this, 'wrapperElement').removeEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
-    get(this, 'wrapperElement').removeEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
+    if(!get(this, 'isLocked')) {
+      //something is broken here, when changing top/bottom these are likely not properly removed
+      get(this, 'wrapperElement').removeEventListener('touchstart', this.onTouchStart.bind(this), {passive: true});
+      get(this, 'wrapperElement').removeEventListener('touchend', this.onTouchEnd.bind(this), {passive: true});
+    }
 
     get(this, 'onWillDestroy')(0, get(this, 'type'));
   },

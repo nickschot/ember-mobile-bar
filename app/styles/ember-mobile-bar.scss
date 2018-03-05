@@ -16,6 +16,10 @@
     bottom: 0;
   }
 
+  &:not(.mobile-bar--locked) {
+    will-change: transform;
+  }
+
   &:not(.mobile-bar--dragging) {
     transition: transform $ember-mobile-bar-transition-duration;
   }
