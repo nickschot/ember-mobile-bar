@@ -14,8 +14,7 @@ export default Component.extend(RespondsToScroll, {
     'isBottomBar:mobile-bar--bottom:mobile-bar--top',
     'isDragging:mobile-bar--dragging',
     'isOpen:mobile-bar--open',
-    'isClosed:mobile-bar--closed',
-    'withShadow:mobile-bar--shadow'
+    'isClosed:mobile-bar--closed'
   ],
   attributeBindings: ['style'],
 
@@ -42,11 +41,6 @@ export default Component.extend(RespondsToScroll, {
    * Type of the bar. Either 'top' or 'bottom'.
    */
   type: 'top',
-
-  /**
-   * Whether or not a shadow is applied to the bar
-   */
-  withShadow: true,
 
   // protected
   wrapperElement: null,

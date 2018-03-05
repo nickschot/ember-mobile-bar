@@ -8,10 +8,6 @@
   background: $ember-mobile-bar-bg;
   color: $ember-mobile-bar-color;
 
-  &.mobile-bar--shadow {
-    box-shadow: $ember-mobile-bar-shadow;
-  }
-
   &.mobile-bar--top {
     top: 0;
   }
@@ -26,6 +22,7 @@
 }
 
 //TODO: demo
+/*
 .search-menu {
   input {
     border-radius: 2px;
@@ -43,3 +40,4 @@
     }
   }
 }
+*/
