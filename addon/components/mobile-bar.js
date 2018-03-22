@@ -68,7 +68,7 @@ export default Component.extend(RespondsToScroll, ResizeObservable, {
     return get(this, 'currentPosition') === 0;
   }),
   isClosed: computed('currentPosition', function(){
-    return get(this, 'currentPosition') === get(this, '_collapsibleHeight');
+    return get(this, '_collapsibleHeight') && get(this, 'currentPosition') === get(this, '_collapsibleHeight');
   }),
 
   style: computed('currentPosition', 'isBottomBar', function(){
@@ -98,6 +98,8 @@ export default Component.extend(RespondsToScroll, ResizeObservable, {
   // lifecycle events ----------------------------------------------------------
   didInsertElement(){
     this._super(...arguments);
+
+    this.observedResize();
 
     if(!get(this, 'isLocked')){
       get(this, 'wrapperElement').addEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
