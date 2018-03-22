@@ -5,8 +5,9 @@ import { computed, get, set } from '@ember/object';
 import { scheduleOnce } from '@ember/runloop';
 import { htmlSafe } from '@ember/string';
 import RespondsToScroll from 'ember-responds-to/mixins/responds-to-scroll';
+import ResizeObservable from 'ember-resize-observer/mixins/resize-observable';
 
-export default Component.extend(RespondsToScroll, {
+export default Component.extend(RespondsToScroll, ResizeObservable, {
   layout,
 
   classNames: ['mobile-bar'],
@@ -103,7 +104,7 @@ export default Component.extend(RespondsToScroll, {
       get(this, 'wrapperElement').addEventListener('touchend', this.onTouchEnd.bind(this), { passive: true });
     }
   },
-  didRender(){
+  observedResize(){
     const height = get(this, 'element').offsetHeight;
 
     if(get(this, 'elementHeight') !== height){
@@ -112,6 +113,8 @@ export default Component.extend(RespondsToScroll, {
     }
   },
   willDestroyElement(){
+    this._super(...arguments);
+
     if(!get(this, 'isLocked')) {
       //something is broken here, when changing top/bottom these are likely not properly removed
       get(this, 'wrapperElement').removeEventListener('touchstart', this.onTouchStart.bind(this), {passive: true});
