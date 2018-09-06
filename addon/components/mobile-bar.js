@@ -86,14 +86,14 @@ export default Component.extend(RespondsToScroll, ResizeObservable, {
    * @param type Either 'top' or 'bottom'
    * @param isOverlay Whether the bar is an overlay or not
    */
-  onHeightChange(height, type, isOverlay){},
+  onHeightChange(){},
 
   /**
    * Fires when the bar is about to be destroyed
    * @param height 0
    * @param type Either 'top' or 'bottom'
    */
-  onWillDestroy(height, type){},
+  onWillDestroy(){},
 
   // lifecycle events ----------------------------------------------------------
   didInsertElement(){
